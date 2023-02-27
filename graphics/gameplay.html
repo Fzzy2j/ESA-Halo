@@ -143,9 +143,9 @@
 		})
 		$(document).ready(function () {
 			$('<div />', {id: 'hidden-resizer'}).hide().appendTo(document.body);
-			nodecg.sendMessage("OnevsOneStateRequest")
+			nodecg.sendMessage("StateRequest")
 		})
-		nodecg.listenFor("OnevsOneUpdate", (remoteState) => {
+		nodecg.listenFor("StateUpdate", (remoteState) => {
 			console.log(remoteState)
 			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
 				for (key in remoteState) {
@@ -157,7 +157,7 @@
 				}
 			}
 		})
-		nodecg.listenFor("gameplayState", (remoteState) => {
+		nodecg.listenFor("StateUpdate", (remoteState) => {
 			setText(remoteState.leftName, "#leftName", 30, 354)
 			setText(remoteState.rightName, "#rightName", 30, 398)
 			setText(remoteState.leftScore, "#leftScore", 30, 50)

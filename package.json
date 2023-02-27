@@ -1,5 +1,5 @@
 {
-  "name": "halo",
+  "name": "ESA-Halo",
   "version": "0.0.0",
   "description": "",
   "homepage": "",
@@ -22,8 +22,8 @@
     "compatibleRange": "^1.1.1",
     "dashboardPanels": [
       {
-        "name": "gameplaypanel",
-        "title": "Gameplay",
+        "name": "halogameplaypanel",
+        "title": "Halo Gameplay",
         "width": 3,
         "file": "panel.html",
         "headerColor": "#525F78"
@@ -31,7 +31,7 @@
     ],
     "graphics": [
       {
-        "file": "index.html",
+        "file": "gameplay.html",
         "width": 1920,
         "height": 1080
       }

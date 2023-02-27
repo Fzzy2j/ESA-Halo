@@ -62,9 +62,9 @@
 	<script>
 		var stateCache = {}
 		$(document).ready(function() {
-			nodecg.sendMessage("OnevsOneStateRequest")
+			nodecg.sendMessage("StateRequest")
 		})
-		nodecg.listenFor("OnevsOneUpdate", (remoteState) => {
+		nodecg.listenFor("StateUpdate", (remoteState) => {
 			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
 				for (key in remoteState) {
 					if (remoteState[key] !== undefined) {
@@ -83,7 +83,7 @@
 		function modifyIntegerValue(id, diff) {
 			var modifiedValue = parseInt($('#' + id).val()) + diff
 			$('#' + id).val(modifiedValue)
-			nodecg.sendMessage("UpdateOnevsOneData", {[id]: modifiedValue})
+			nodecg.sendMessage("UpdateStateData", {[id]: modifiedValue})
 		}
 		function updateModifiedColors() {
 			$("input").each(function (index) {
@@ -103,7 +103,7 @@
 				leftScore: $("#rightScore").val(),
 				rightScore: $("#leftScore").val()
 			})
-			nodecg.sendMessage("UpdateOnevsOneData", {
+			nodecg.sendMessage("UpdateStateData", {
 				leftName: $("#rightName").val(),
 				rightName: $("#leftName").val(),
 				leftScore: $("#rightScore").val(),
@@ -111,7 +111,7 @@
 			})
 		}
 		function reset() {
-			nodecg.sendMessage("UpdateOnevsOneData", {
+			nodecg.sendMessage("UpdateStateData", {
 				leftName: "",
 				rightName: "",
 				leftScore: 0,
@@ -124,7 +124,7 @@
 				update[$(this).attr("id")] = $(this).val()
 				stateCache[$(this).attr("id")] = $(this).val()
 			})
-			nodecg.sendMessage("UpdateOnevsOneData", update)
+			nodecg.sendMessage("UpdateStateData", update)
 			updateModifiedColors()
 		}
 		$("input").on("keypress", function(e) {
