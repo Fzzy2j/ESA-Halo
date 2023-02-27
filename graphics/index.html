@@ -1,0 +1,197 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<style>
+		@font-face {
+			font-family: 'Gotham';
+			src: url('fonts/Gotham-Black.woff') format("woff");
+			font-weight: normal;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'GothamM';
+			src: url('fonts/GOTHAM-MEDIUM.woff') format("woff");
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		p {
+			font-family: 'Gotham';
+			font-size: 30px;
+			color: white;
+			margin: 0;
+			text-shadow: 0px 0px 3px #000000;
+			text-align: center;
+			line-height: 50px;
+		}
+
+		#hidden-resizer {
+			font-family: 'Gotham';
+		}
+
+		#bg {
+			position:absolute;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+
+		.slide {
+			max-width: 265px;
+			max-height: 50px;
+			vertical-align: middle;
+		}
+
+		.slideContainer {
+			position: absolute;
+			white-space: nowrap;
+			text-align: center;
+			width: 265px;
+			height: 50px;
+		}
+
+		.helper {
+			display: inline-block;
+			height: 100%;
+			vertical-align: midde;
+		}
+
+		#sponsorSlideshow {
+			position: absolute;
+			left: 1645px;
+			top: 1000px;
+		}
+
+		div {
+			margin: 3px;
+		}
+
+		#leftScoreContainer {
+			position: absolute;
+			top: 0;
+			left: 666px;
+			width: 50px;
+			height: 50px;
+		}
+
+		#rightScoreContainer {
+			position: absolute;
+			top: 0;
+			left: 1197px;
+			width: 50px;
+			height: 50px;
+		}
+
+		#leftNameContainer {
+			position: absolute;
+			top: 0;
+			left: 303px;
+			width: 354px;
+			height: 50px;
+		}
+
+		#rightNameContainer {
+			position: absolute;
+			top: 0;
+			left: 1256px;
+			width: 398px;
+			height: 50px;
+		}
+
+		#setContainer {
+			position: absolute;
+			top: 1020px;
+			left: 1310px;
+			width: 330px;
+			height: 50px;
+		}
+	</style>
+	<script type="text/javascript">
+		function setText(text, target, maxFontSize, maxWidth) {
+			var size;
+			var desired_width = maxWidth;
+			var resizer = $("#hidden-resizer");
+
+			resizer.html(text);
+
+			resizer.css("font-size", maxFontSize);
+			size = parseInt(resizer.css("font-size"), 10);
+			while(resizer.width() > desired_width) {
+				size = parseInt(resizer.css("font-size"), 10);
+				resizer.css("font-size", size - 1);
+			}
+			size = parseInt(resizer.css("font-size"), 10);
+			resizer.css("font-size", size - 1);
+
+			$(target).css("font-size", size).html(resizer.html());
+		}
+		function getTextSize(text, fontSize) {
+			var resizer = $("#hidden-resizer");
+			resizer.html(text);
+			resizer.css("font-size", fontSize);
+			return resizer.width()
+		}
+		const sponsorRep = nodecg.Replicant('assets:sponsorlogos');
+		var logos = []
+		sponsorRep.on("change", (newValue, oldValue) => {
+			logos = newValue
+			$("#sponsorSlideshow").children().remove()
+			for (var i = 0; i < logos.length; i++) {
+				$("#sponsorSlideshow").append("<div class='slideContainer'><span class='helper'></span><img class='slide' src='" + logos[i].url + "'></div>")
+			}
+			showSlides();
+		})
+		$(document).ready(function () {
+			$('<div />', {id: 'hidden-resizer'}).hide().appendTo(document.body);
+			nodecg.sendMessage("OnevsOneStateRequest")
+		})
+		nodecg.listenFor("OnevsOneUpdate", (remoteState) => {
+			console.log(remoteState)
+			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+				for (key in remoteState) {
+					if (remoteState[key] !== undefined) {
+						var element = $("#" + key)
+						if (element.is("input")) element.val(remoteState[key])
+						if (element.is("p")) element.text(remoteState[key])
+					}
+				}
+			}
+		})
+		nodecg.listenFor("gameplayState", (remoteState) => {
+			setText(remoteState.leftName, "#leftName", 30, 354)
+			setText(remoteState.rightName, "#rightName", 30, 398)
+			setText(remoteState.leftScore, "#leftScore", 30, 50)
+			setText(remoteState.rightScore, "#rightScore", 30, 50)
+			setText(remoteState.setName, "#setName", 30, 330)
+		})
+		let slideIndex = 0;
+
+		function showSlides() {
+			let i;
+			var slides = $(".slide")
+			slideIndex++
+			if (slideIndex >= slides.length) {
+				slideIndex = 0
+			}
+			if (slides.length) {
+				slides.each(function (index) {
+					if (slideIndex != index) {
+						$(this).animate({opacity: 0}, 1000)
+					}
+				})
+				slides.eq(slideIndex).animate({opacity: 1}, 1000)
+			}
+		}
+		setInterval(showSlides, 6000);
+		</script>
+	</head>
+	<body>
+		<img id="bg" src="images/overlay.png">
+		<div id="leftScoreContainer"><p id="leftScore">0</p></div>
+		<div id="leftNameContainer"><p id="leftName">TEAM 1</p></div>
+		<div id="rightScoreContainer"><p id="rightScore">0</p></div>
+		<div id="rightNameContainer"><p id="rightName">TEAM 2</p></div>
+		<div id="setContainer"><p id="setName">GRAND FINALS</p></div>
+		<div id="sponsorSlideshow"></div>
+	</body>
+	</html>

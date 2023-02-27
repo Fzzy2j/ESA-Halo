@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+	<style>
+		@font-face {
+        	font-family: "Metronic Pro";
+        	src: url("font/MetronicPro.ttf");
+    	}
+
+		p {
+        	font-family: "Metronic Pro";
+			margin: 0;
+		}
+
+		#leftScore {
+			width: 30px;
+		}
+
+		#rightScore {
+			width: 30px;
+		}
+
+		input {
+			margin-bottom: 10px;
+			width: 250px;
+        	font-family: "Metronic Pro";
+        	font-size: 20px;
+		}
+
+		select {
+			margin-bottom: 10px;
+			width: 250px;
+        	font-family: "Metronic Pro";
+        	font-size: 20px;
+		}
+
+		button {
+        	font-family: "Metronic Pro";
+        	font-size: 20px;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<input tabindex="1" id="leftName" type="text" autocomplete="off" oninput="updateModifiedColors()">
+	<button tabindex="-1" onclick="modifyIntegerValue('leftScore', -1)">-</button>
+	<input tabindex="3" id="leftScore" type="text" autocomplete="off" oninput="updateModifiedColors()">
+	<button tabindex="-1" onclick="modifyIntegerValue('leftScore', 1)">+</button>
+	<br>
+	<input tabindex="2" id="rightName" type="text" autocomplete="off" oninput="updateModifiedColors()">
+	<button tabindex="-1" onclick="modifyIntegerValue('rightScore', -1)">-</button>
+	<input tabindex="4" id="rightScore" type="text" autocomplete="off" oninput="updateModifiedColors()">
+	<button tabindex="-1" onclick="modifyIntegerValue('rightScore', 1)">+</button>
+	<br>
+	<button tabindex="-1" onclick="flip()">Flip</button>
+	<button tabindex="-1" onclick="reset()">Reset</button>
+	<br>
+	<input tabindex="5" id="setName" type="text" autocomplete="off" oninput="updateModifiedColors()">
+
+	<script>
+		var stateCache = {}
+		$(document).ready(function() {
+			nodecg.sendMessage("OnevsOneStateRequest")
+		})
+		nodecg.listenFor("OnevsOneUpdate", (remoteState) => {
+			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+				for (key in remoteState) {
+					if (remoteState[key] !== undefined) {
+						var isModified = stateCache[key] !== undefined && $("#" + key).val() != stateCache[key]
+						stateCache[key] = remoteState[key]
+						if (!isModified) {
+							var element = $("#" + key)
+							if (element.is("input")) element.val(remoteState[key])
+							if (element.is("p")) element.text(remoteState[key])
+						}
+					}
+				}
+				updateModifiedColors()
+			}
+		})
+		function modifyIntegerValue(id, diff) {
+			var modifiedValue = parseInt($('#' + id).val()) + diff
+			$('#' + id).val(modifiedValue)
+			nodecg.sendMessage("UpdateOnevsOneData", {[id]: modifiedValue})
+		}
+		function updateModifiedColors() {
+			$("input").each(function (index) {
+				$(this).val($(this).val().toUpperCase())
+				var cacheValue = stateCache[$(this).attr("id")]
+				if (cacheValue !== undefined && cacheValue != $(this).val()) {
+					$(this).css("color", "deeppink")
+				} else {
+					$(this).css("color", "black")
+				}
+			})
+		}
+		function flip() {
+			console.log({
+				leftName: $("#rightName").val(),
+				rightName: $("#leftName").val(),
+				leftScore: $("#rightScore").val(),
+				rightScore: $("#leftScore").val()
+			})
+			nodecg.sendMessage("UpdateOnevsOneData", {
+				leftName: $("#rightName").val(),
+				rightName: $("#leftName").val(),
+				leftScore: $("#rightScore").val(),
+				rightScore: $("#leftScore").val()
+			})
+		}
+		function reset() {
+			nodecg.sendMessage("UpdateOnevsOneData", {
+				leftName: "",
+				rightName: "",
+				leftScore: 0,
+				rightScore: 0
+			})
+		}
+		function updateState() {
+			var update = {}
+			$("input").each(function (index) {
+				update[$(this).attr("id")] = $(this).val()
+				stateCache[$(this).attr("id")] = $(this).val()
+			})
+			nodecg.sendMessage("UpdateOnevsOneData", update)
+			updateModifiedColors()
+		}
+		$("input").on("keypress", function(e) {
+			if (e.which == 13) {
+				updateState()
+			}
+		})
+		document.onkeydown = function(evt) {
+			if (evt.key == "Escape") {
+				var focused = $(":focus")
+				focused.val(stateCache[focused.attr("id")])
+				updateModifiedColors()
+			}
+		}
+	</script>
+</body>
+</html>
