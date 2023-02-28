@@ -24,10 +24,6 @@
 			text-align: center;
 		}
 
-		body {
-			background-color: #101015;
-		}
-
 		.helper {
 			display: inline-block;
 			height: 100%;
@@ -90,64 +86,23 @@
 			color: #101015;
 		}
 
+		.container {
+			display: inline-block;
+			width: 326px;
+			height: 610px;
+			margin-left: 6px;
+			margin-right: 6px;
+		}
+
+		.mapImage {
+			width: 326px;
+			height: 610px;
+		}
+
 		.mapOverlay {
 			position: absolute;
 			top: 174px;
 			z-index: 1;
-		}
-
-		#map1Container {
-			position: absolute;
-			top: 174px;
-			left: 457px;
-			width: 326px;
-			height: 610px;
-			white-space: nowrap;
-			text-align: center;
-		}
-		#map1 {
-			width: 326px;
-			height: 610px;
-			vertical-align: middle;
-		}
-		#map1Overlay {
-			left: 457px;
-		}
-
-		#map2Container {
-			position: absolute;
-			top: 174px;
-			left: 799px;
-			width: 326px;
-			height: 610px;
-			white-space: nowrap;
-			text-align: center;
-		}
-		#map2 {
-			width: 326px;
-			height: 610px;
-			vertical-align: middle;
-		}
-		#map2Overlay {
-			left: 799px;
-		}
-
-		#map3Container {
-			position: absolute;
-			top: 174px;
-			left: 1141px;
-			width: 326px;
-			height: 610px;
-			white-space: nowrap;
-			text-align: center;
-		}
-		#map3 {
-			width: 326px;
-			height: 610px;
-			vertical-align: middle;
-		}
-		#map3Overlay {
-			left: 1141px;
 		}
 	</style>
 	<script type="text/javascript">
@@ -190,16 +145,23 @@
 						}
 					}
 				}
-				for (var i = 1; i <= 3; i++) {
+				for (var i = 1; i <= 5; i++) {
 					var mapState = remoteState["map" + i + "State"]
-					if (mapState == "none") {
-						$("#map" + i + "Overlay").hide()
+					if (i >= 4 && remoteState.bestOf == "bo3") {
+						$("#map" + i + "OverlayContainer").hide()
+						$("#map" + i + "Container").hide()
+					} else {
+						$("#map" + i + "OverlayContainer").show()
+						$("#map" + i + "Container").show()
+					}
+					if (mapState === undefined || mapState == "none") {
+						$("#map" + i + "Overlay").css("opacity", "0")
 					} else if (mapState == "red") {
 						$("#map" + i + "Overlay").attr("src", "images/redwin.png")
-						$("#map" + i + "Overlay").show()
+						$("#map" + i + "Overlay").css("opacity", "1")
 					} else if (mapState == "blue") {
 						$("#map" + i + "Overlay").attr("src", "images/bluewin.png")
-						$("#map" + i + "Overlay").show()
+						$("#map" + i + "Overlay").css("opacity", "1")
 					}
 				}
 			}
@@ -216,18 +178,27 @@
 		</script>
 	</head>
 	<body>
-		<img id="bg" src="images/bo3.png">
-		<img class="mapOverlay" id="map1Overlay" src="">
-		<img class="mapOverlay" id="map2Overlay" src="">
-		<img class="mapOverlay" id="map3Overlay" src="">
+		<img id="bg" src="images/mapselect.png">
 		<div id="leftNameContainer"><p id="leftName">TEAM 1</p></div>
 		<div id="rightNameContainer"><p id="rightName">TEAM 2</p></div>
 		<div id="leftScoreContainer"><p id="leftScore">0</p></div>
 		<div id="rightScoreContainer"><p id="rightScore">0</p></div>
 		<div id="setContainer"><p id="setName">GRAND FINALS</p></div>
 
-		<div id="map1Container"><span class="helper"></span><img id="map1" src=""></div>
-		<div id="map2Container"><span class="helper"></span><img id="map2" src=""></div>
-		<div id="map3Container"><span class="helper"></span><img id="map3" src=""></div>
+		<div style="position: absolute; top: 174px; width: 1920px; text-align: center; left: 0;">
+			<div id="map1Container" class="container"><img src="" id="map1" class="mapImage"></div>
+			<div id="map2Container" class="container"><img src="" id="map2" class="mapImage"></div>
+			<div id="map3Container" class="container"><img src="" id="map3" class="mapImage"></div>
+			<div id="map4Container" class="container"><img src="" id="map4" class="mapImage"></div>
+			<div id="map5Container" class="container"><img src="" id="map5" class="mapImage"></div>
+		</div>
+
+		<div style="position: absolute; top: 174px; width: 1920px; text-align: center; left: 0;">
+			<div id="map1OverlayContainer" class="container"><img src="images/redwin.png" id="map1Overlay"></div>
+			<div id="map2OverlayContainer" class="container"><img src="images/redwin.png" id="map2Overlay"></div>
+			<div id="map3OverlayContainer" class="container"><img src="images/redwin.png" id="map3Overlay"></div>
+			<div id="map4OverlayContainer" class="container"><img src="images/redwin.png" id="map4Overlay"></div>
+			<div id="map5OverlayContainer" class="container"><img src="images/redwin.png" id="map5Overlay"></div>
+		</div>
 	</body>
 	</html>

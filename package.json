@@ -29,10 +29,10 @@
         "headerColor": "#525F78"
       },
       {
-        "name": "halobestof3mapspanel",
-        "title": "Halo Best of 3 Maps",
+        "name": "halomapspanel",
+        "title": "Halo Maps",
         "width": 3,
-        "file": "bo3panel.html",
+        "file": "mapspanel.html",
         "headerColor": "#525F78"
       }
     ],
@@ -48,7 +48,7 @@
         "height": 1080
       },
       {
-        "file": "bo3.html",
+        "file": "maps.html",
         "width": 1920,
         "height": 1080
       }

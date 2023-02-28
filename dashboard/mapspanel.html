@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<head>
+	<meta charset="UTF-8">
+	<style>
+		@font-face {
+			font-family: "Metronic Pro";
+			src: url("font/MetronicPro.ttf");
+		}
+
+		p {
+			font-family: "Metronic Pro";
+			margin: 0;
+		}
+
+		#leftScore {
+			width: 30px;
+		}
+
+		#rightScore {
+			width: 30px;
+		}
+
+		input {
+			margin-bottom: 10px;
+			width: 250px;
+			font-family: "Metronic Pro";
+			font-size: 20px;
+		}
+
+		select {
+			margin-bottom: 10px;
+			width: 250px;
+			font-family: "Metronic Pro";
+			font-size: 20px;
+		}
+
+		button {
+			font-family: "Metronic Pro";
+			font-size: 20px;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<select id="bestOf" onchange="updateState()">
+		<option value="bo3">Best of 3</option>
+		<option value="bo5">Best of 5</option>
+	</select>
+	<button onclick="clearAllMapStates()">RESET ALL</button>
+	<div id="map1Container">
+		<select id="map1" class="mapSelector" onchange="updateState()"></select>
+		<button onclick="setMapState('map1', 'red')">R</button><button onclick="setMapState('map1', 'blue')">B</button><button onclick="setMapState('map1', 'none')">NONE</button>
+	</div>
+	<div id="map2Container">
+		<select id="map2" class="mapSelector" onchange="updateState()"></select>
+		<button onclick="setMapState('map2', 'red')">R</button><button onclick="setMapState('map2', 'blue')">B</button><button onclick="setMapState('map2', 'none')">NONE</button>
+	</div>
+	<div id="map3Container">
+		<select id="map3" class="mapSelector" onchange="updateState()"></select>
+		<button onclick="setMapState('map3', 'red')">R</button><button onclick="setMapState('map3', 'blue')">B</button><button onclick="setMapState('map3', 'none')">NONE</button>
+	</div>
+	<div id="map4Container">
+		<select id="map4" class="mapSelector" onchange="updateState()"></select>
+		<button onclick="setMapState('map4', 'red')">R</button><button onclick="setMapState('map4', 'blue')">B</button><button onclick="setMapState('map4', 'none')">NONE</button>
+	</div>
+	<div id="map5Container">
+		<select id="map5" class="mapSelector" onchange="updateState()"></select>
+		<button onclick="setMapState('map5', 'red')">R</button><button onclick="setMapState('map5', 'blue')">B</button><button onclick="setMapState('map5', 'none')">NONE</button>
+	</div>
+
+	<script>
+		var stateCache = {}
+
+		const mapsRep = nodecg.Replicant('assets:maps');
+		var logos = {}
+		mapsRep.on("change", (newValue, oldValue) => {
+			logos = {}
+			$(".mapSelector").children().remove()
+			for (var i = 0; i < newValue.length; i++) {
+				logos[newValue[i].name] = newValue[i].url
+
+				$(".mapSelector").append("<option value='" + newValue[i].url + "'>" + newValue[i].name + "</option>")
+			}
+		})
+
+		var stateCache = {}
+		$(document).ready(function() {
+			nodecg.sendMessage("StateRequest")
+		})
+		nodecg.listenFor("StateUpdate", (remoteState) => {
+			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+				for (key in remoteState) {
+					if (remoteState[key] !== undefined) {
+						stateCache[key] = remoteState[key]
+						var element = $("#" + key)
+						if (element.is("input") || element.is("select")) element.val(remoteState[key])
+							if (element.is("p")) element.text(remoteState[key])
+						}
+				}
+				for (var i = 1; i <= 5; i++) {
+					var mapState = remoteState["map" + i + "State"]
+					if (i >= 4 && remoteState.bestOf == "bo3") {
+						$("#map" + i + "Container").hide()
+					} else {
+						$("#map" + i + "Container").show()
+					}
+					if (mapState == "none") {
+						$("#map" + i).css("color", "black")
+					} else if (mapState == "red") {
+						$("#map" + i).css("color", "red")
+					} else if (mapState == "blue") {
+						$("#map" + i).css("color", "blue")
+					}
+				}
+			}
+		})
+		function setMapState(map, state) {
+			nodecg.sendMessage("UpdateStateData", { [map + "State"]: state })
+		}
+		function clearAllMapStates() {
+			var state = {
+				map1State: "none",
+				map2State: "none",
+				map3State: "none",
+				map4State: "none",
+				map5State: "none"
+			}
+			nodecg.sendMessage("UpdateStateData", state)
+		}
+		function updateState() {
+			var update = {}
+			$("input, select").each(function (index) {
+				update[$(this).attr("id")] = $(this).val()
+				stateCache[$(this).attr("id")] = $(this).val()
+			})
+			nodecg.sendMessage("UpdateStateData", update)
+		}
+	</script>
+</body>
+</html>
