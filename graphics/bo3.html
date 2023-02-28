@@ -1,0 +1,233 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<style>
+		@font-face {
+			font-family: 'Gotham';
+			src: url('fonts/Gotham-Black.woff') format("woff");
+			font-weight: normal;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'GothamM';
+			src: url('fonts/GOTHAM-MEDIUM.woff') format("woff");
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		p {
+			font-family: 'Gotham';
+			font-size: 45px;
+			color: white;
+			margin: 0;
+			text-shadow: 0px 0px 3px #000000;
+			text-align: center;
+		}
+
+		body {
+			background-color: #101015;
+		}
+
+		.helper {
+			display: inline-block;
+			height: 100%;
+			vertical-align: middle;
+		}
+
+		#bg {
+			position:absolute;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+
+		#leftNameContainer {
+			position: absolute;
+			top: 830px;
+			left: 115px;
+			width: 510px;
+			height: 74px;
+			line-height: 74px;
+		}
+
+		#rightNameContainer {
+			position: absolute;
+			top: 830px;
+			left: 1295px;
+			width: 510px;
+			height: 74px;
+			line-height: 74px;
+		}
+
+		#leftScoreContainer {
+			position: absolute;
+			top: 830px;
+			left: 628px;
+			width: 74px;
+			height: 74px;
+			line-height: 74px;
+		}
+
+		#rightScoreContainer {
+			position: absolute;
+			top: 830px;
+			left: 1218px;
+			width: 74px;
+			height: 74px;
+			line-height: 74px;
+		}
+
+		#setContainer {
+			position: absolute;
+			top: 830px;
+			left: 710px;
+			width: 500px;
+			height: 74px;
+			line-height: 74px;
+		}
+
+		#setName {
+			color: #101015;
+		}
+
+		.mapOverlay {
+			position: absolute;
+			top: 174px;
+			z-index: 1;
+		}
+
+		#map1Container {
+			position: absolute;
+			top: 174px;
+			left: 457px;
+			width: 326px;
+			height: 610px;
+			white-space: nowrap;
+			text-align: center;
+		}
+		#map1 {
+			width: 326px;
+			height: 610px;
+			vertical-align: middle;
+		}
+		#map1Overlay {
+			left: 457px;
+		}
+
+		#map2Container {
+			position: absolute;
+			top: 174px;
+			left: 799px;
+			width: 326px;
+			height: 610px;
+			white-space: nowrap;
+			text-align: center;
+		}
+		#map2 {
+			width: 326px;
+			height: 610px;
+			vertical-align: middle;
+		}
+		#map2Overlay {
+			left: 799px;
+		}
+
+		#map3Container {
+			position: absolute;
+			top: 174px;
+			left: 1141px;
+			width: 326px;
+			height: 610px;
+			white-space: nowrap;
+			text-align: center;
+		}
+		#map3 {
+			width: 326px;
+			height: 610px;
+			vertical-align: middle;
+		}
+		#map3Overlay {
+			left: 1141px;
+		}
+	</style>
+	<script type="text/javascript">
+		var startingFontSizes = {}
+		function setText(target, text) {
+			var desiredWidth = $(target).parent().width();
+			var targetElement = $(target)
+			var resizer = $("#hidden-resizer")
+			var maxFontSize = startingFontSizes[target]
+			if (maxFontSize === undefined) {
+				maxFontSize = targetElement.css("font-size")
+				startingFontSizes[target] = maxFontSize
+			}
+			resizer.html(text)
+			resizer.css("font-size", maxFontSize)
+			resizer.css("font-family", targetElement.css("font-family"))
+
+			var size = 0
+			while(resizer.width() > desiredWidth) {
+				size = parseInt(resizer.css("font-size"), 10);
+				resizer.css("font-size", size - 1);
+			}
+			size = parseInt(resizer.css("font-size"), 10);
+			resizer.css("font-size", size - 1);
+			targetElement.css("font-size", size).html(resizer.html());
+		}
+		$(document).ready(function () {
+			$('<div />', {id: 'hidden-resizer'}).hide().appendTo(document.body);
+			nodecg.sendMessage("StateRequest")
+		})
+		nodecg.listenFor("StateUpdate", (remoteState) => {
+			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+				for (key in remoteState) {
+					if (remoteState[key] !== undefined) {
+						var element = $("#" + key)
+						if (element.is("input")) element.val(remoteState[key])
+						if (element.is("p")) setText("#" + key, remoteState[key])
+						if (element.is("img")) {
+							element.attr("src", remoteState[key])
+						}
+					}
+				}
+				for (var i = 1; i <= 3; i++) {
+					var mapState = remoteState["map" + i + "State"]
+					if (mapState == "none") {
+						$("#map" + i + "Overlay").hide()
+					} else if (mapState == "red") {
+						$("#map" + i + "Overlay").attr("src", "images/redwin.png")
+						$("#map" + i + "Overlay").show()
+					} else if (mapState == "blue") {
+						$("#map" + i + "Overlay").attr("src", "images/bluewin.png")
+						$("#map" + i + "Overlay").show()
+					}
+				}
+			}
+		})
+
+		const mapsRep = nodecg.Replicant('assets:maps');
+		var logos = {}
+		mapsRep.on("change", (newValue, oldValue) => {
+			logos = {}
+			for (var i = 0; i < newValue.length; i++) {
+				logos[newValue[i].name] = newValue[i].url
+			}
+		})
+		</script>
+	</head>
+	<body>
+		<img id="bg" src="images/bo3.png">
+		<img class="mapOverlay" id="map1Overlay" src="">
+		<img class="mapOverlay" id="map2Overlay" src="">
+		<img class="mapOverlay" id="map3Overlay" src="">
+		<div id="leftNameContainer"><p id="leftName">TEAM 1</p></div>
+		<div id="rightNameContainer"><p id="rightName">TEAM 2</p></div>
+		<div id="leftScoreContainer"><p id="leftScore">0</p></div>
+		<div id="rightScoreContainer"><p id="rightScore">0</p></div>
+		<div id="setContainer"><p id="setName">GRAND FINALS</p></div>
+
+		<div id="map1Container"><span class="helper"></span><img id="map1" src=""></div>
+		<div id="map2Container"><span class="helper"></span><img id="map2" src=""></div>
+		<div id="map3Container"><span class="helper"></span><img id="map3" src=""></div>
+	</body>
+	</html>

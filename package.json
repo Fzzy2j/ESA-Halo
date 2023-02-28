@@ -25,13 +25,30 @@
         "name": "halogameplaypanel",
         "title": "Halo Gameplay",
         "width": 3,
-        "file": "panel.html",
+        "file": "gameplaypanel.html",
+        "headerColor": "#525F78"
+      },
+      {
+        "name": "halobestof3mapspanel",
+        "title": "Halo Best of 3 Maps",
+        "width": 3,
+        "file": "bo3panel.html",
         "headerColor": "#525F78"
       }
     ],
     "graphics": [
       {
         "file": "gameplay.html",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "file": "vsscreen.html",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "file": "bo3.html",
         "width": 1920,
         "height": 1080
       }
@@ -45,6 +62,11 @@
       {
         "name": "sponsorlogos",
         "title": "Sponsor Logos",
+        "allowedTypes": ["jpg", "jpeg", "gif", "png"]
+      },
+      {
+        "name": "maps",
+        "title": "Maps",
         "allowedTypes": ["jpg", "jpeg", "gif", "png"]
       }
     ]
