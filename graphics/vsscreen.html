@@ -48,6 +48,22 @@
 			height: 74px;
 			line-height: 74px;
 		}
+
+		#redGeneric {
+			position: absolute;
+			transform: scaleX(-1);
+			-webkit-transform: scaleX(-1);
+			top: 100px;
+			left: 50px;
+			z-index: -2;
+		}
+
+		#blueGeneric {
+			position: absolute;
+			top: 100px;
+			left: 1130px;
+			z-index: -2;
+		}
 	</style>
 	<script type="text/javascript">
 		var startingFontSizes = {}
@@ -92,6 +108,8 @@
 	</head>
 	<body>
 		<img id="bg" src="images/vsscreen.png">
+		<img id="redGeneric" src="images/red.png">
+		<img id="blueGeneric" src="images/blue.png">
 		<div id="leftNameContainer"><p id="leftName">TEAM 1</p></div>
 		<div id="rightNameContainer"><p id="rightName">TEAM 2</p></div>
 	</body>

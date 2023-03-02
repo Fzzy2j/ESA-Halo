@@ -33,12 +33,12 @@
 			position:absolute;
 			top: 0;
 			left: 0;
-			z-index: -1;
+			z-index: -2;
 		}
 
 		.slide {
-			max-width: 265px;
-			max-height: 50px;
+			max-width: 245px;
+			max-height: 58px;
 			vertical-align: middle;
 		}
 
@@ -46,8 +46,8 @@
 			position: absolute;
 			white-space: nowrap;
 			text-align: center;
-			width: 265px;
-			height: 50px;
+			width: 245px;
+			height: 58px;
 		}
 
 		.helper {
@@ -58,8 +58,8 @@
 
 		#sponsorSlideshow {
 			position: absolute;
-			left: 1645px;
-			top: 1020px;
+			left: 1655px;
+			top: 1015px;
 		}
 
 		#leftScoreContainer {
@@ -154,6 +154,7 @@
 		let slideIndex = 0;
 
 		function showSlides() {
+			console.log("slides")
 			let i;
 			var slides = $(".slide")
 			slideIndex++
@@ -169,7 +170,7 @@
 				slides.eq(slideIndex).animate({opacity: 1}, 1000)
 			}
 		}
-		setInterval(showSlides, 6000);
+		setInterval(showSlides, 10000);
 		</script>
 	</head>
 	<body>
