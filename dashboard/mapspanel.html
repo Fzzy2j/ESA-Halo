@@ -83,12 +83,35 @@
 
 				$(".mapSelector").append("<option value='" + newValue[i].url + "'>" + newValue[i].name + "</option>")
 			}
+			syncMapsWithCache()
 		})
 
 		var stateCache = {}
 		$(document).ready(function() {
 			nodecg.sendMessage("StateRequest")
 		})
+		function syncMapsWithCache() {
+			for (key in stateCache) {
+				var element = $("#" + key)
+				if (element.is("input") || element.is("select")) element.val(stateCache[key])
+				if (element.is("p")) element.text(stateCache[key])
+			}
+			for (var i = 1; i <= 5; i++) {
+				var mapState = stateCache["map" + i + "State"]
+				if (i >= 4 && stateCache.bestOf == "bo3") {
+					$("#map" + i + "Container").hide()
+				} else {
+					$("#map" + i + "Container").show()
+				}
+				if (mapState == "none") {
+					$("#map" + i).css("color", "black")
+				} else if (mapState == "red") {
+					$("#map" + i).css("color", "red")
+				} else if (mapState == "blue") {
+					$("#map" + i).css("color", "blue")
+				}
+			}
+		}
 		nodecg.listenFor("StateUpdate", (remoteState) => {
 			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
 				for (key in remoteState) {
@@ -96,8 +119,8 @@
 						stateCache[key] = remoteState[key]
 						var element = $("#" + key)
 						if (element.is("input") || element.is("select")) element.val(remoteState[key])
-							if (element.is("p")) element.text(remoteState[key])
-						}
+						if (element.is("p")) element.text(remoteState[key])
+					}
 				}
 				for (var i = 1; i <= 5; i++) {
 					var mapState = remoteState["map" + i + "State"]
